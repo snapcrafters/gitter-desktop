@@ -1,0 +1,46 @@
+name: gitter-desktop
+version: VVV
+summary: Where developers come to talk
+description: |
+ Gitter is a chat and networking platform that helps to manage, grow
+ and connect communities through messaging, content and discovery.
+
+grade: stable
+confinement: strict
+
+parts:
+  gitter-desktop:
+    plugin: dump
+    source: UUU
+    source-type: deb
+    after:
+      - desktop-gtk2
+    stage-packages:
+      - gconf2
+      - libasound2
+      - libgl1-mesa-glx
+      - libglu1-mesa
+      - libnotify4
+      - libnspr4
+      - libnss3
+      - libpulse0
+      - libxss1
+      - libxtst6
+
+apps:
+  gitter-desktop:
+    # Correct the TMPDIR path for Chromium Framework/Electron to
+    # ensure libappindicator has readable resources.
+    command: env TMPDIR=$XDG_RUNTIME_DIR PATH=/usr/local/bin:${PATH} ${SNAP}/bin/desktop-launch $SNAP/opt/Gitter/TTT/Gitter
+    desktop: opt/Gitter/TTT/gitter.desktop
+    plugs:
+      - browser-support
+      - gsettings
+      - home
+      - mount-observe
+      - network
+      - network-bind
+      - opengl
+      - pulseaudio
+      - unity7
+      - x11

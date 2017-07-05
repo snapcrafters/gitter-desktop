@@ -32,7 +32,7 @@ upstream so Gitter Desktop can authoritatively publish future releases.
   - [x] Fork the [Snapcrafters template]() repository to your own GitHub account
   - [x] Create a snap that runs in `devmode`
   - [x] Register the snap in the store, **using the preferred upstream name**
-  - [ ] Add a screenshot to this `README.md`
+  - [x] Add a screenshot to this `README.md`
   - [x] Publish the `devmode` snap in the Snap store edge channel
   - [x] Add install instructions to this `README.md`
   - [x] Update snap store metadata, icons and screenshots
@@ -45,7 +45,7 @@ upstream so Gitter Desktop can authoritatively publish future releases.
   - [x] Publish the snap in the Snap store stable channel
   - [x] Update the install instructions in this `README.md`
   - [x] Post an announcement in the [Snapcraft Forum](https://forum.snapcraft.io) - [link](https://insights.ubuntu.com/2017/06/15/gitter-and-mattermost-two-desktop-apps-for-your-future-chat-platform/)
-  - [ ] Submit a pull request or patch upstream that adds snap install documentation - contacted via there Gitter room
+  - [x] Submit a pull request or patch upstream that adds snap install documentation - contacted via there Gitter room
   - [ ] Submit a pull request or patch upstream that adds the `snapcraft.yaml` and any required assets/launchers - [link]()
   - If upstream accept the PR:
     - [ ] Request upstream create a Snap store account

@@ -6,11 +6,9 @@
 
 <p align="center"><b>This is the snap for Gitter Desktop</b>, <i>"a chat and networking platform"</i>. It works on Ubuntu, Fedora, Debian, and other major Linux distributions.</p>
 
-<!--
 <p align="center">
 <a href="https://build.snapcraft.io/user/snapcrafters/gitter-desktop"><img src="https://build.snapcraft.io/badge/snapcrafters/gitter-desktop.svg" alt="Snap Status"></a>
 </p>
--->
 
 ## Install
 

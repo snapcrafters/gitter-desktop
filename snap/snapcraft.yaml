@@ -16,8 +16,8 @@ parts:
     after:
       - desktop-gtk2
     stage-packages:
-      - gconf2
       - libasound2
+      - libgconf2-4
       - libgl1-mesa-glx
       - libglu1-mesa
       - libnotify4
@@ -29,10 +29,12 @@ parts:
 
 apps:
   gitter-desktop:
-    # Correct the TMPDIR path for Chromium Framework/Electron to
-    # ensure libappindicator has readable resources.
-    command: env TMPDIR=$XDG_RUNTIME_DIR PATH=/usr/local/bin:${PATH} ${SNAP}/bin/desktop-launch $SNAP/opt/Gitter/linux64/Gitter
+    command: bin/desktop-launch $SNAP/opt/Gitter/linux64/Gitter
     desktop: opt/Gitter/linux64/gitter.desktop
+    # Correct the TMPDIR path for Chromium Framework/Electron to ensure
+    # libappindicator has readable resources.
+    environment:
+      TMPDIR: $XDG_RUNTIME_DIR
     plugs:
       - browser-support
       - gsettings
@@ -43,6 +45,5 @@ apps:
       - opengl
       - pulseaudio
       - unity7
-      - desktop
-      - desktop-legacy
       - wayland
+      - x11

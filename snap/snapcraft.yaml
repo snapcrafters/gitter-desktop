@@ -1,5 +1,6 @@
 name: gitter-desktop
-version: 3.1.0
+version: latest
+version-script: cat $SNAPCRAFT_STAGE/version
 summary: Where developers come to talk
 description: |
  Gitter is a chat and networking platform that helps to manage, grow
@@ -10,11 +11,43 @@ confinement: strict
 
 parts:
   gitter-desktop:
-    plugin: dump
-    source: https://update.gitter.im/linux64/gitter_3.1.0_amd64.deb
-    source-type: deb
+    plugin: nil
+    override-build: |
+      snapcraftctl build
+      ARCHITECTURE=$(dpkg --print-architecture)
+      if [ "${ARCHITECTURE}" = "amd64" ]; then
+        DEB_API="https://update.gitter.im/linux64/latest"
+      elif [ "${ARCHITECTURE}" = "i386" ]; then
+        DEB_API="https://update.gitter.im/linux32/latest"
+      else
+        echo "ERROR! Gitter Desktop only produces debs for amd64 and i386. Failing the build here."
+        exit 1
+      fi
+
+      DEB_URL=$(wget -q -O - "${DEB_API}" 2>/dev/null | grep http-equiv | cut -d'"' -f4 | sed 's/0;url=//')
+      DEB=$(basename "${DEB_URL}")
+      echo "Downloading ${DEB_URL}..."
+      wget --quiet "${DEB_URL}" -O "${SNAPCRAFT_PART_INSTALL}/${DEB}"
+
+      echo "Unpacking ${DEB}..."
+      dpkg -x "${SNAPCRAFT_PART_INSTALL}/${DEB}" ${SNAPCRAFT_PART_INSTALL}
+      rm -f "${SNAPCRAFT_PART_INSTALL}/${DEB}" 2>/dev/null
+      if [ "${ARCHITECTURE}" = "amd64" ]; then
+        mv ${SNAPCRAFT_PART_INSTALL}/opt/Gitter/linux64 ${SNAPCRAFT_PART_INSTALL}/opt/Gitter/linux
+        sed -i 's/linux64/linux/g' ${SNAPCRAFT_PART_INSTALL}/opt/Gitter/linux/gitter.desktop
+      elif [ "${ARCHITECTURE}" = "i386" ]; then
+        mv ${SNAPCRAFT_PART_INSTALL}/opt/Gitter/linux32 ${SNAPCRAFT_PART_INSTALL}/opt/Gitter/linux
+        sed -i 's/linux32/linux/g' ${SNAPCRAFT_PART_INSTALL}/opt/Gitter/linux/gitter.desktop
+      fi
+
+      VERSION=$(echo "${DEB}" | cut -d'_' -f2)
+      echo $VERSION > $SNAPCRAFT_STAGE/version
     after:
       - desktop-gtk2
+    build-packages:
+      - dpkg
+      - sed
+      - wget
     stage-packages:
       - libasound2
       - libgconf2-4
@@ -29,15 +62,16 @@ parts:
 
 apps:
   gitter-desktop:
-    command: bin/desktop-launch $SNAP/opt/Gitter/linux64/Gitter
-    desktop: opt/Gitter/linux64/gitter.desktop
+    command: bin/desktop-launch $SNAP/opt/Gitter/linux/Gitter
+    desktop: opt/Gitter/linux/gitter.desktop
     # Correct the TMPDIR path for Chromium Framework/Electron to ensure
     # libappindicator has readable resources.
     environment:
       TMPDIR: $XDG_RUNTIME_DIR
     plugs:
-      - desktop
       - browser-support
+      - desktop
+      - desktop-legacy
       - gsettings
       - home
       - mount-observe

@@ -35,9 +35,11 @@ parts:
       if [ "${ARCHITECTURE}" = "amd64" ]; then
         mv ${SNAPCRAFT_PART_INSTALL}/opt/Gitter/linux64 ${SNAPCRAFT_PART_INSTALL}/opt/Gitter/linux
         sed -i 's/linux64/linux/g' ${SNAPCRAFT_PART_INSTALL}/opt/Gitter/linux/gitter.desktop
+        execstack --clear-execstack ${SNAPCRAFT_PART_INSTALL}/opt/Gitter/linux/nacl_irt_x86_64.nexe
       elif [ "${ARCHITECTURE}" = "i386" ]; then
         mv ${SNAPCRAFT_PART_INSTALL}/opt/Gitter/linux32 ${SNAPCRAFT_PART_INSTALL}/opt/Gitter/linux
         sed -i 's/linux32/linux/g' ${SNAPCRAFT_PART_INSTALL}/opt/Gitter/linux/gitter.desktop
+        execstack --clear-execstack ${SNAPCRAFT_PART_INSTALL}/opt/Gitter/linux/nacl_irt_x86_32.nexe
       fi
 
       VERSION=$(echo "${DEB}" | cut -d'_' -f2)
@@ -48,6 +50,7 @@ parts:
       - dpkg
       - sed
       - wget
+      - execstack
     stage-packages:
       - libasound2
       - libgconf2-4

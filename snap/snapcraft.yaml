@@ -45,7 +45,7 @@ parts:
       VERSION=$(echo "${DEB}" | cut -d'_' -f2)
       echo $VERSION > $SNAPCRAFT_STAGE/version
     after:
-      - desktop-gtk2
+      - desktop-gtk3
     build-packages:
       - dpkg
       - sed

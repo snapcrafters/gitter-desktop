@@ -9,7 +9,52 @@ description: |
 grade: stable
 confinement: strict
 
+architectures:
+  - build-on: amd64
+  - build-on: i386
+
+grade: stable
+confinement: strict
+
+plugs:
+  gnome-3-26-1604:
+    interface: content
+    target: $SNAP/gnome-platform
+    default-provider: gnome-3-26-1604
+  gtk-3-themes:
+    interface: content
+    target: $SNAP/data-dir/themes
+    default-provider: gtk-common-themes
+  icon-themes:
+    interface: content
+    target: $SNAP/data-dir/icons
+    default-provider: gtk-common-themes
+  sound-themes:
+    interface: content
+    target: $SNAP/data-dir/sounds
+    default-provider: gtk-common-themes
+
 parts:
+  gnome:
+    plugin: nil
+    override-pull: |
+      add-apt-repository -y ppa:ubuntu-desktop/gnome-3-26
+      apt -y update
+      apt -y upgrade
+
+  libappindicator:
+    plugin: nil
+    after:
+      - gnome
+    stage-packages:
+      - libappindicator3-1
+    build-attributes:
+      - no-system-libraries
+    prime:
+      - usr/lib/$SNAPCRAFT_ARCH_TRIPLET/libdbusmenu*.so*
+      - usr/lib/$SNAPCRAFT_ARCH_TRIPLET/libappindicator*.so*
+      - usr/lib/$SNAPCRAFT_ARCH_TRIPLET/libindicator*.so*
+
   gitter-desktop:
     plugin: nil
     override-build: |
@@ -28,53 +73,50 @@ parts:
       DEB=$(basename "${DEB_URL}")
       echo "Downloading ${DEB_URL}..."
       wget --quiet "${DEB_URL}" -O "${SNAPCRAFT_PART_INSTALL}/${DEB}"
-
       echo "Unpacking ${DEB}..."
       dpkg -x "${SNAPCRAFT_PART_INSTALL}/${DEB}" ${SNAPCRAFT_PART_INSTALL}
       rm -f "${SNAPCRAFT_PART_INSTALL}/${DEB}" 2>/dev/null
       if [ "${ARCHITECTURE}" = "amd64" ]; then
         mv ${SNAPCRAFT_PART_INSTALL}/opt/Gitter/linux64 ${SNAPCRAFT_PART_INSTALL}/opt/Gitter/linux
         sed -i 's/linux64/linux/g' ${SNAPCRAFT_PART_INSTALL}/opt/Gitter/linux/gitter.desktop
-        execstack --clear-execstack ${SNAPCRAFT_PART_INSTALL}/opt/Gitter/linux/nacl_irt_x86_64.nexe
       elif [ "${ARCHITECTURE}" = "i386" ]; then
         mv ${SNAPCRAFT_PART_INSTALL}/opt/Gitter/linux32 ${SNAPCRAFT_PART_INSTALL}/opt/Gitter/linux
         sed -i 's/linux32/linux/g' ${SNAPCRAFT_PART_INSTALL}/opt/Gitter/linux/gitter.desktop
-        execstack --clear-execstack ${SNAPCRAFT_PART_INSTALL}/opt/Gitter/linux/nacl_irt_x86_32.nexe
       fi
 
       VERSION=$(echo "${DEB}" | cut -d'_' -f2)
       echo $VERSION > $SNAPCRAFT_STAGE/version
     after:
-      - desktop-gtk3
+      - gnome
+      - desktop-gnome-platform
+      - libappindicator
+    build-attributes:
+      - no-system-libraries
     build-packages:
       - dpkg
       - sed
       - wget
-      - execstack
     stage-packages:
       - libasound2
       - libgconf2-4
-      - libgl1-mesa-glx
-      - libglu1-mesa
-      - libnotify4
       - libnspr4
       - libnss3
-      - libpulse0
       - libxss1
-      - libxtst6
 
 apps:
   gitter-desktop:
     command: bin/desktop-launch $SNAP/opt/Gitter/linux/Gitter
     desktop: opt/Gitter/linux/gitter.desktop
-    # Correct the TMPDIR path for Chromium Framework/Electron to ensure
-    # libappindicator has readable resources.
-    # Coerce XDG_CURRENT_DESKTOP to Unity so that App Indicators
-    # are used and do not fall back to Notification Area applets
-    # or disappear completely.
     environment:
+      # Correct the TMPDIR path for Chromium Framework/Electron to
+      # ensure libappindicator has readable resources
       TMPDIR: $XDG_RUNTIME_DIR
+      # Coerce XDG_CURRENT_DESKTOP to Unity so that App Indicators
+      # are used and do not fall back to Notification Area applets
+      # or disappear completely.
       XDG_CURRENT_DESKTOP: Unity
+      # Fallback to XWayland if running in a Wayland session.
+      DISABLE_WAYLAND: 1
     plugs:
       - browser-support
       - desktop
@@ -86,6 +128,7 @@ apps:
       - network-bind
       - opengl
       - pulseaudio
+      - screen-inhibit-control
       - unity7
       - wayland
       - x11

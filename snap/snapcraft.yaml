@@ -1,10 +1,9 @@
 name: gitter-desktop
-version: latest
-version-script: cat $SNAPCRAFT_STAGE/version
 summary: Where developers come to talk
 description: |
  Gitter is a chat and networking platform that helps to manage, grow
  and connect communities through messaging, content and discovery.
+adopt-info: gitter-desktop
 
 grade: stable
 confinement: strict
@@ -12,9 +11,6 @@ confinement: strict
 architectures:
   - build-on: amd64
   - build-on: i386
-
-grade: stable
-confinement: strict
 
 plugs:
   gnome-3-26-1604:
@@ -87,7 +83,7 @@ parts:
       fi
 
       VERSION=$(echo "${DEB}" | cut -d'_' -f2)
-      echo $VERSION > $SNAPCRAFT_STAGE/version
+      snapcraftctl set-version "$VERSION"
     after:
       - gnome
       - desktop-gnome-platform

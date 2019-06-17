@@ -102,6 +102,8 @@ parts:
       - libnspr4
       - libnss3
       - libxss1
+    prime:
+      - -opt/Gitter/linux/nacl_irt_*.nexe
 
 apps:
   gitter-desktop:

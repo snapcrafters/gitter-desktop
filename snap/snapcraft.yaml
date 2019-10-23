@@ -4,6 +4,7 @@ description: |
  Gitter is a chat and networking platform that helps to manage, grow
  and connect communities through messaging, content and discovery.
 adopt-info: gitter-desktop
+base: core18
 
 grade: stable
 confinement: strict
@@ -13,10 +14,10 @@ architectures:
   - build-on: i386
 
 plugs:
-  gnome-3-26-1604:
+  gnome-3-28-1804:
     interface: content
     target: $SNAP/gnome-platform
-    default-provider: gnome-3-26-1604
+    default-provider: gnome-3-28-1804
   gtk-3-themes:
     interface: content
     target: $SNAP/data-dir/themes
@@ -31,23 +32,28 @@ plugs:
     default-provider: gtk-common-themes
 
 parts:
-  gnome:
+  bsi-trigger: # A non-built part, only used to trigger builds in build.snapcraft.io on upstream changes
     plugin: nil
+    source: https://gitlab.com/gitlab-org/gitter/desktop.git
+  desktop-gnome-platform:
     build-packages:
-      - software-properties-common
-    override-pull: |
-      add-apt-repository -y ppa:ubuntu-desktop/gnome-3-26
-      apt -y update
-      apt -y upgrade
+    - build-essential
+    - libgtk-3-dev
+    make-parameters:
+    - FLAVOR=gtk3
+    override-build: |
+      snapcraftctl build
+      mkdir -pv $SNAPCRAFT_PART_INSTALL/gnome-platform
+    plugin: make
+    source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
+    source-subdir: gtk
 
   libappindicator:
     plugin: nil
     after:
-      - gnome
+      - desktop-gnome-platform
     stage-packages:
       - libappindicator3-1
-    build-attributes:
-      - no-system-libraries
     prime:
       - usr/lib/$SNAPCRAFT_ARCH_TRIPLET/libdbusmenu*.so*
       - usr/lib/$SNAPCRAFT_ARCH_TRIPLET/libappindicator*.so*
@@ -87,11 +93,8 @@ parts:
       VERSION=$(echo "${DEB}" | cut -d'_' -f2)
       snapcraftctl set-version "$VERSION"
     after:
-      - gnome
       - desktop-gnome-platform
       - libappindicator
-    build-attributes:
-      - no-system-libraries
     build-packages:
       - dpkg
       - sed
@@ -104,7 +107,19 @@ parts:
       - libxss1
     prime:
       - -opt/Gitter/linux/nacl_irt_*.nexe
-
+  desktop-gnome-platform:
+    build-packages:
+    - build-essential
+    - libgtk-3-dev
+    make-parameters:
+    - FLAVOR=gtk3
+    override-build: |
+      snapcraftctl build
+      mkdir -pv $SNAPCRAFT_PART_INSTALL/gnome-platform
+    plugin: make
+    source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
+    source-subdir: gtk
+    
 apps:
   gitter-desktop:
     command: bin/desktop-launch $SNAP/opt/Gitter/linux/Gitter

@@ -107,18 +107,6 @@ parts:
       - libxss1
     prime:
       - -opt/Gitter/linux/nacl_irt_*.nexe
-  desktop-gnome-platform:
-    build-packages:
-    - build-essential
-    - libgtk-3-dev
-    make-parameters:
-    - FLAVOR=gtk3
-    override-build: |
-      snapcraftctl build
-      mkdir -pv $SNAPCRAFT_PART_INSTALL/gnome-platform
-    plugin: make
-    source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
-    source-subdir: gtk
     
 apps:
   gitter-desktop:

@@ -78,6 +78,7 @@ apps:
     extensions: [gnome-3-28]
     command: opt/Gitter/linux/Gitter
     desktop: opt/Gitter/linux/gitter.desktop
+    autostart: gitter.desktop
     environment:
       # Correct the TMPDIR path for Chromium Framework/Electron to
       # ensure libappindicator has readable resources

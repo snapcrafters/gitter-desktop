@@ -91,16 +91,10 @@ apps:
       DISABLE_WAYLAND: 1
     plugs:
       - browser-support
-      - desktop
-      - desktop-legacy
-      - gsettings
       - home
-      - mount-observe
       - network
       - network-bind
       - opengl
       - pulseaudio
       - screen-inhibit-control
       - unity7
-      - wayland
-      - x11

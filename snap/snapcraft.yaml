@@ -72,6 +72,14 @@ parts:
       - libxss1
     prime:
       - -opt/Gitter/linux/nacl_irt_*.nexe
+  cleanup:
+    after: [gitter-desktop]
+    plugin: nil
+    build-snaps: [ gnome-3-28-1804 ]
+    override-prime: |
+        set -eux
+        cd /snap/gnome-3-28-1804/current
+        find . -type f,l -exec rm -f $SNAPCRAFT_PRIME/{} \;
     
 apps:
   gitter-desktop:

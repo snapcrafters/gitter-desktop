@@ -69,6 +69,9 @@ parts:
       - libnspr4
       - libnss3
       - libxss1
+    prime:
+      - -opt/Gitter/linux/*.nexe
+
   cleanup:
     after: [gitter-desktop]
     plugin: nil

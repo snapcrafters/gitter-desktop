@@ -4,7 +4,7 @@ description: |
  Gitter is a chat and networking platform that helps to manage, grow
  and connect communities through messaging, content and discovery.
 adopt-info: gitter-desktop
-base: core18
+base: core20
 
 grade: stable
 confinement: strict
@@ -75,15 +75,15 @@ parts:
   cleanup:
     after: [gitter-desktop]
     plugin: nil
-    build-snaps: [ gnome-3-28-1804 ]
+    build-snaps: [ gnome-3-38-2004 ]
     override-prime: |
         set -eux
-        cd /snap/gnome-3-28-1804/current
+        cd /snap/gnome-3-38-2004/current
         find . -type f,l -exec rm -f $SNAPCRAFT_PRIME/{} \;
     
 apps:
   gitter-desktop:
-    extensions: [gnome-3-28]
+    extensions: [gnome-3-38]
     command: opt/Gitter/linux/Gitter
     desktop: opt/Gitter/linux/gitter.desktop
     autostart: gitter.desktop
